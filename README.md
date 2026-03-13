@@ -25,6 +25,7 @@ db.password=본인의_MySQL_비밀번호_입력
 ```
 ---
 
+
 ## 🤝 팀 협업 컨벤션 (Team Collaboration Convention)
 
 우리 팀의 안전하고 효율적인 프로젝트 진행을 위한 협업 가이드입니다.
