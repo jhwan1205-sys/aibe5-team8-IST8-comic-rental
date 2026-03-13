@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.db.DBUtil;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
