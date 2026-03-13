@@ -24,7 +24,44 @@ db.user=root
 db.password=본인의_MySQL_비밀번호_입력
 ```
 ---
+## 📂 프로젝트 파일 구조 (Directory Structure)
 
+본 프로젝트는 객체지향의 역할 분담과 향후 프레임워크 도입을 고려하여 도메인 및 MVC(Controller-Service-Repository) 패턴 기반으로 디렉토리를 분리하여 작업합니다.
+
+```text
+comic-rental/
+├── .idea/                      # IntelliJ 프로젝트 설정 폴더 (Git에 안 올라감)
+├── gradle/wrapper/             # Gradle 빌드 도구 관련 폴더
+│
+├── src/main/
+│   ├── java/org/example/      
+│   │   ├── Main.java           # 프로그램의 진짜 시작점 (App 객체 생성 및 실행)
+│   │   ├── App.java            # 명령어 무한 루프(while) 및 분기 처리, 입출력 담당
+│   │   ├── Rq.java             # 사용자 입력 명령어(Request) 분석 유틸
+│   │   │
+│   │   ├── db/                 # 공통 DB 인프라
+│   │   │   └── DBUtil.java     # DB 연결 및 종료 유틸리티
+│   │   │
+│   │   ├── comic/              # 📚 만화책 도메인
+│   │   │   ├── Comic.java              # 엔티티(DTO): 만화책 데이터 껍데기
+│   │   │   ├── ComicService.java       # 핵심 비즈니스 로직 및 기능 수행
+│   │   │   └── ComicRepository.java    # DB에 INSERT/SELECT 쿼리 날리기
+│   │   │
+│   │   ├── member/             # 👤 회원 도메인
+│   │   │   └── (Service, Repository, DTO 등 생성 예정)
+│   │   │
+│   │   └── rental/             # 🔄 대여/반납 도메인
+│   │       └── (Service, Repository, DTO 등 생성 예정)
+│   │
+│   └── resources/              # ⚙️ 설정 파일들이 들어가는 곳
+│       ├── db.properties         # (Git 제외) 진짜 내 DB 비밀번호
+│       └── db.properties.sample  # (Git 포함) 팀원 공유용 샘플 파일
+│
+├── .gitignore                  # Git에 올리지 않을 파일 목록
+├── build.gradle                # 의존성, 인코딩 옵션 등을 적어둔 빌드 설정 파일
+├── gradlew, gradlew.bat        # 터미널용 빌드 스크립트
+└── README.md                   # 📄 프로젝트 설명서
+```
 
 ## 🤝 팀 협업 컨벤션 (Team Collaboration Convention)
 
