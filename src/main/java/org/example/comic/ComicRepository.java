@@ -11,7 +11,7 @@ public interface ComicRepository  {
 
     Optional<Comic> findById(long id);
 
-    boolean updateComic(long id, String title, int volume, String author, boolean rented);
+    boolean updateComic(long id, String title, int volume, String author);
 
     boolean deleteById(long id);
 }
