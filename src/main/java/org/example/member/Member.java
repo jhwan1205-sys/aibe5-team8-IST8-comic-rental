@@ -1,22 +1,24 @@
 package org.example.member;
 
+import java.time.LocalDate;
+
 public class Member {
-    private int id;
+    private Long id;
     private String name;
     private String phone;
-    private String regDate;
+    private LocalDate regDate;
 
-    public Member(int id, String name, String phone, String regDate) {
+    public Member(Long id, String name, String phone, LocalDate regDate) {
         this.id = id;
         this.name = name;
         this.phone = phone;
         this.regDate = regDate;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getName() {
@@ -31,10 +33,10 @@ public class Member {
     public void setPhone(String phone) {
         this.phone = phone;
     }
-    public String getRegDate() {
+    public LocalDate getRegDate() {
         return regDate;
     }
-    public void setRegDate(String regDate) {
+    public void setRegDate(LocalDate regDate) {
         this.regDate = regDate;
     }
 
