@@ -17,8 +17,8 @@ public class JdbcComicRepository implements ComicRepository {
     @Override
     public long addComic(String title, int volume, String author) {
         final String sql = """
-                INSERT INTO comic (title, volume, author, isRented, regdate)
-                VALUES (?, ?, ?, ?, CURDATE())
+                INSERT INTO comic (title, volume, author, isRented)
+                VALUES (?, ?, ?, ?)
                 """;
         Connection conn = DBUtil.getConnection();
         if (conn == null) {
@@ -108,10 +108,10 @@ public class JdbcComicRepository implements ComicRepository {
     }
 
     @Override
-    public boolean updateComic(long id, String title, int volume, String author, boolean rented) {
+    public boolean updateComic(long id, String title, int volume, String author) {
         final String sql = """
                 UPDATE comic
-                SET title = ?, volume = ?, author = ?, isRented = ?
+                SET title = ?, volume = ?, author = ?
                 WHERE id = ?
                 """;
 
@@ -126,8 +126,7 @@ public class JdbcComicRepository implements ComicRepository {
             pstmt.setString(1, title);
             pstmt.setInt(2, volume);
             pstmt.setString(3, author);
-            pstmt.setBoolean(4, rented);
-            pstmt.setLong(5, id);
+            pstmt.setLong(4, id);
 
             return pstmt.executeUpdate() == 1;
         } catch (SQLException e) {
