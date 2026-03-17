@@ -3,6 +3,7 @@ package org.example.member;
 import org.example.db.DBUtil;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,10 +46,10 @@ public class MemberRepository {
         ) {
             while(rs.next()) {
                 Member member = new Member(
-                        rs.getInt("id"),
+                        rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("phone"),
-                        rs.getString("regdate")
+                        rs.getObject("regdate", LocalDate.class)
                 );
                 members.add(member);
             }
