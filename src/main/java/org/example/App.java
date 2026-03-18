@@ -61,10 +61,18 @@ public class App {
                     break;
                 }
                 case "comic-detail": {
+                    if (data.length < 1) {
+                        System.out.println("만화책 번호를 입력해주세요. 예: comic-detail 1");
+                        break;
+                    }
                     comicController.showComicDetail(data[0]);
                     break;
                 }
                 case "comic-update": {
+                    if (data.length < 1) {
+                        System.out.println("수정할 만화책 번호를 입력해주세요. 예: comic-update 1");
+                        break;
+                    }
                     comicController.updateComic(data[0]);
                     break;
                 }
@@ -80,10 +88,18 @@ public class App {
                 }
                 //대여&반납 관련 명령어
                 case "rent": {
+                    if (data.length < 2) {
+                        System.out.println("회원 번호와 만화책 번호를 모두 입력해주세요. 예: rent 1 2");
+                        break;
+                    }
                     rentalController.rentComic(data[0], data[1]);
                     break;
                 }
                 case "return": {
+                    if (data.length < 1) {
+                        System.out.println("반납할 만화책 번호를 입력해주세요. 예: return 1");
+                        break;
+                    }
                     rentalController.returnComic(data[0]);
                     break;
                 }
