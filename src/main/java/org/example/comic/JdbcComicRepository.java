@@ -20,13 +20,10 @@ public class JdbcComicRepository implements ComicRepository {
                 INSERT INTO comic (title, volume, author, isRented)
                 VALUES (?, ?, ?, ?)
                 """;
-        Connection conn = DBUtil.getConnection();
-        if (conn == null) {
-            return -1L;
-        }
+
         try (
-                Connection c = conn;
-                PreparedStatement pstmt = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+                Connection conn = DBUtil.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
         ) {
             pstmt.setString(1, title);
             pstmt.setInt(2, volume);
@@ -57,15 +54,9 @@ public class JdbcComicRepository implements ComicRepository {
                 FROM comic
                 ORDER BY id
                 """;
-
-        Connection conn = DBUtil.getConnection();
-        if (conn == null) {
-            return comics;
-        }
-
         try (
-                Connection c = conn;
-                PreparedStatement pstmt = c.prepareStatement(sql);
+                Connection conn = DBUtil.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql);
                 ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 comics.add(mapRow(rs));
@@ -85,17 +76,13 @@ public class JdbcComicRepository implements ComicRepository {
                 WHERE id = ?
                 """;
 
-        Connection conn = DBUtil.getConnection();
-        if (conn == null) {
-            return Optional.empty();
-        }
 
         try (
-                Connection c = conn;
-                PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setLong(1, id);
+                Connection conn = DBUtil.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, id);
 
-            try (ResultSet rs = ps.executeQuery()) {
+            try (ResultSet rs = pstmt.executeQuery()) {
                 if (!rs.next()) {
                     return Optional.empty();
                 }
@@ -115,14 +102,9 @@ public class JdbcComicRepository implements ComicRepository {
                 WHERE id = ?
                 """;
 
-        Connection conn = DBUtil.getConnection();
-        if (conn == null) {
-            return false;
-        }
-
         try (
-                Connection c = conn;
-                PreparedStatement pstmt = c.prepareStatement(sql)) {
+                Connection conn = DBUtil.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, title);
             pstmt.setInt(2, volume);
             pstmt.setString(3, author);
@@ -138,16 +120,12 @@ public class JdbcComicRepository implements ComicRepository {
     @Override
     public boolean deleteById(long id) {
         final String sql = "DELETE FROM comic WHERE id = ?";
-        Connection conn = DBUtil.getConnection();
-        if (conn == null) {
-            return false;
-        }
 
         try (
-                Connection c = conn;
-                PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setLong(1, id);
-            return ps.executeUpdate() == 1;
+                Connection conn = DBUtil.getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, id);
+            return pstmt.executeUpdate() == 1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
