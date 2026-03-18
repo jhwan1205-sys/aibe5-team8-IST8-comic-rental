@@ -1,8 +1,9 @@
 package org.example;
 
-import org.example.comic.Comic;
-import org.example.member.Member;
-import org.example.rental.Rental;
+//임시로 폴더 전체 import
+import org.example.comic.*;
+import org.example.member.*;
+import org.example.rental.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -74,6 +75,14 @@ public class App {
                         break;
                     }
                     comicController.updateComic(data[0]);
+                    break;
+                }
+                case "comic-delete": {
+                    if (data.length < 1) {
+                        System.out.println("삭제할 만화책 번호를 입력해주세요. 예: comic-delete 1");
+                        break;
+                    }
+                    comicController.deleteComic(data[0]);
                     break;
                 }
                 //회원 관련 명령어
