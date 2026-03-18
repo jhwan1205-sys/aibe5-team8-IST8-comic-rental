@@ -10,8 +10,8 @@ import java.util.List;
 public class MemberRepository {
     public int addMember(String name, String phone) {
         String sql = """
-                INSERT INTO member(name, phone, regdate)
-                VALUES (?, ?, CURDATE())
+                INSERT INTO member(name, phone)
+                VALUES (?, ?)
                 """;
         try (
                 Connection conn = DBUtil.getConnection();
