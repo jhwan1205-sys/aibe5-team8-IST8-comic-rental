@@ -1,0 +1,17 @@
+package org.example.rental;
+
+import java.util.List;
+
+public interface RentalRepository {
+    // 대여 정보 저장
+    int save(Rental rental);
+
+    // 특정 대여 기록 찾기
+    Rental findById(long id);
+
+    // 전체 대여 목록
+    List<Rental> findAll();
+
+    // 업데이트 ( 반납날짜 등 )
+    void update(Rental rental);
+}
