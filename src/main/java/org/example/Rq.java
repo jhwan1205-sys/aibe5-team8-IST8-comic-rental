@@ -3,28 +3,35 @@ package org.example;
 public class Rq {
     private String action;
     private int[] data;
-    public Rq(String request) {
-        String[] split = request.split(" ");
-        action = split[0];
+    private boolean valid = true; // 명령어 유효성 상태를 저장
 
-        if (split.length > 1) {
-            data = new int[split.length - 1];
+    public Rq(String command) {
+        String[] split = command.trim().split("\\s+");
+        this.action = split[0];
+
+        if (split.length == 1) {
+            this.data = new int[0];
+            return;
         }
+        this.data = new int[split.length - 1];
+
         try {
-            if (split.length == 2) {
-                this.data[0] = Integer.parseInt(split[1]);
-            } else if (split.length == 3) {
-                this.data[0] = Integer.parseInt(split[1]);
-                this.data[1] = Integer.parseInt(split[2]);
+            for (int i = 1; i < split.length; i++) {
+                this.data[i - 1] = Integer.parseInt(split[i]);
             }
         } catch (NumberFormatException e) {
-            System.out.println("양식에 맞게 명령어를 입력하세요.");
+            System.out.println("양식에 맞게 명령어를 입력하세요. (숫자 입력 필요)");
+            this.valid = false; // 파싱 실패 시 false로 변경
         }
 
     }
 
     public String getAction() {
         return action;
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 
     public int[] getData() {

@@ -15,11 +15,13 @@ public class App {
 
     public App() {
         this.sc = new Scanner(System.in);
+        ComicRepository comicRepository = new JdbcComicRepository();
+        MemberRepository memberRepository = new MemberRepository();
+        RentalRepository rentalRepository=new RentalRepository();
 
-        // 💡 객체 조립 (실제로는 Main이나 별도의 클래스에서 조립해서 넘겨주는 것이 더 완벽하지만, 현재 단계에선 여기서 해도 충분합니다!)
-        ComicService comicService = new ComicService(new JdbcComicRepository());
-        MemberService memberService = new MemberService(new JdbcMemberRepository());
-        RentalService rentalService = new RentalService(new JdbcRentalRepository(), comicService, memberService);
+        ComicService comicService = new ComicService(comicRepository);
+        MemberService memberService = new MemberService(memberRepository);
+        RentalService rentalService = new RentalService(rentalRepository, comicService, memberService);
 
         this.comicController = new ComicController(sc, comicService);
         this.memberController = new MemberController(sc, memberService);
@@ -30,9 +32,16 @@ public class App {
         System.out.println("===만화 대여 프로그램 시작===");
         while (true) {
             System.out.print("명령어 : ");
-            String command = sc.next();
+            String command = sc.nextLine().trim();
+            if (command.isEmpty()) continue;
             //rq를 통한 명령어 해석
             Rq rq = new Rq(command);
+
+            // 숫자를 잘못 입력한 경우 다시 입력받도록 차단
+            if (!rq.isValid()) {
+                continue;
+            }
+
             String action = rq.getAction();
             int[] data = rq.getData();
 
