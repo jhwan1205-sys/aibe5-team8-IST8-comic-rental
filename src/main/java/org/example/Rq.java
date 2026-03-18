@@ -17,7 +17,7 @@ public class Rq {
                 this.data[0] = Integer.parseInt(split[1]);
                 this.data[1] = Integer.parseInt(split[2]);
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             System.out.println("양식에 맞게 명령어를 입력하세요.");
         }
 
