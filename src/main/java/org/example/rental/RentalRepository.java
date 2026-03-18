@@ -6,8 +6,8 @@ public interface RentalRepository {
     // 대여 정보 저장
     int save(Rental rental);
 
-    // 특정 대여 기록 찾기
-    Rental findById(long id);
+    // 멤버가 대여한 기록 찾기
+    Rental findByRentalId(long id);
 
     // 전체 대여 목록
     List<Rental> findAll();

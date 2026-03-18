@@ -5,21 +5,21 @@ import org.example.db.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RentalRepositoryImpl implements RentalRepository {
     @Override
     public int save(Rental rental) {
-        String sql = "INSERT INTO rentals (comic_id, member_id, rental_date, return_date) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO rental (comicId, memberId, rentalDate) VALUES (?, ?, ?)";
 
         try (Connection conn = DBUtil.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)){
 
             pstmt.setLong(1, rental.getComicId());
             pstmt.setLong(2, rental.getMemberId());
-            pstmt.setDate(3, rental.getRentalDate());
-            pstmt.setDate(4, rental.getReturnDate());
+            pstmt.setObject(3, rental.getRentalDate());
 
             return pstmt.executeUpdate();
         } catch (Exception e){
@@ -29,20 +29,21 @@ public class RentalRepositoryImpl implements RentalRepository {
     }
 
     @Override
-    public Rental findById(long id) {
+    public Rental findByRentalId(long rentalid) {
         String sql = "SELECT * FROM rental WHERE id = ?";
+
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setLong(1, id);
+            pstmt.setLong(1, rentalid);
             try(ResultSet rs = pstmt.executeQuery()){
                 // 결과가 하나라도 있다면,
                 if(rs.next()){
                     Rental rental = new Rental();
                     rental.setId(rs.getLong("id"));
-                    rental.setComicId(rs.getLong("comic_id"));
-                    rental.setMemberId(rs.getLong("member_id"));
-                    rental.setRentalDate(rs.getDate("rental_date"));
-                    rental.setReturnDate(rs.getDate("return_date"));
+                    rental.setComicId(rs.getLong("comicId"));
+                    rental.setMemberId(rs.getLong("memberId"));
+                    rental.setRentalDate(rs.getObject("rentalDate", LocalDate.class));
+                    rental.setReturnDate(rs.getObject("returnDate", LocalDate.class));
 
                     return rental;
                 }
@@ -64,10 +65,10 @@ public class RentalRepositoryImpl implements RentalRepository {
             while (rs.next()){
                 Rental rental = new Rental();
                 rental.setId(rs.getLong("id"));
-                rental.setComicId(rs.getLong("comic_id"));
-                rental.setMemberId(rs.getLong("member_id"));
-                rental.setRentalDate(rs.getDate("rental_date"));
-                rental.setReturnDate(rs.getDate("return_date"));
+                rental.setComicId(rs.getLong("comicId"));
+                rental.setMemberId(rs.getLong("memberId"));
+                rental.setRentalDate(rs.getObject("rentalDate", LocalDate.class));
+                rental.setReturnDate(rs.getObject("returnDate", LocalDate.class));
                 rentalList.add(rental);
             }
         } catch (Exception e){
@@ -78,13 +79,11 @@ public class RentalRepositoryImpl implements RentalRepository {
 
     @Override
     public void update(Rental rental) {
-        // 반납일자 뿐만이 아닌 다른 것들도 수정사항에 들어감
-        // 반납일자를 수정하고자 할 때
-        String sql = "UPDATE rental SET return_date = ? WHERE id = ?";
+        String sql = "UPDATE rental SET returnDate = ? WHERE id = ?";
 
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setDate(1, rental.getReturnDate());
+            pstmt.setObject(1, rental.getReturnDate());
             pstmt.setLong(2, rental.getId());
 
             int result = pstmt.executeUpdate();

@@ -1,13 +1,14 @@
 package org.example.rental;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class Rental {
     private Long id;
     private Long comicId;
     private Long memberId;
-    private Date rentalDate;
-    private Date returnDate;
+    private LocalDate rentalDate;
+    private LocalDate returnDate;
 
     public Long getComicId() {
         return comicId;
@@ -25,11 +26,11 @@ public class Rental {
         this.memberId = memberId;
     }
 
-    public Date getRentalDate() {
+    public LocalDate getRentalDate() {
         return rentalDate;
     }
 
-    public void setRentalDate(Date rentalDate) {
+    public void setRentalDate(LocalDate rentalDate) {
         this.rentalDate = rentalDate;
     }
 
@@ -41,11 +42,11 @@ public class Rental {
         this.id = id;
     }
 
-    public Date getReturnDate() {
+    public LocalDate getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(Date returnDate) {
+    public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
     }
 

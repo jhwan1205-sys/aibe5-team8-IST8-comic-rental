@@ -1,23 +1,18 @@
 package org.example.rental;
 
-import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RentalService {
     RentalRepository repository = new RentalRepositoryImpl();
 
-    public void rentComic(long comicId, long memberId, Date rentalDate) {
+    public void rentComic(long comicId, long memberId) {
         System.out.println("== 대여 서비스입니다. ==");
         List<Rental> allRentals = repository.findAll();
 
-        // volume에 따라 남은 책을 표시하고, 대여가 가능한지 여부(?)
-        // 검증 : 모든 대여 기록에서..
         for(Rental r : allRentals) {
-            if(r.getComicId() == comicId && r.getMemberId() == memberId) {
-                // 코믹이 이미 빌린 목록에 있다면
-                System.out.println("이미 대여를 하셨습니다.");
+            if(r.getComicId() == comicId && r.getReturnDate() == null) {
+                System.out.println("이미 누군가 대여를 하였습니다.");
                 return;
             }
         }
@@ -25,7 +20,7 @@ public class RentalService {
         Rental rental = new Rental();
         rental.setMemberId(memberId);
         rental.setComicId(comicId);
-        rental.setRentalDate(rentalDate);
+        rental.setRentalDate(LocalDate.now());
 
         int result = repository.save(rental);
         if(result > 0) {
@@ -33,27 +28,41 @@ public class RentalService {
         }
     }
 
-    public void returnComic(long rentalId, long memberId, Date returnDate) {
+    public void returnComic(long rentalId) {
         System.out.println("== 반납 서비스입니다. ==");
-        Rental rental = repository.findById(rentalId);
+        Rental rental = repository.findByRentalId(rentalId);
 
-        rental.setMemberId(memberId);
-        rental.setReturnDate(returnDate);
-
-        int result = repository.save(rental);
-        if(result > 0) {
-            System.out.println("반납이 완료되었습니다.");
+        if (rental == null){
+            System.out.println("해당 대여 번호를 찾을 수 없습니다.");
+            return;
         }
+
+        // volume++;
+        rental.setReturnDate(LocalDate.now());
+        repository.update(rental);
+        System.out.println("반납이 완료되었습니다.");
+
     }
 
-    public void listRentals(Rental rental){
+    public void listRentals(long memberId){
         List<Rental> rentalList = repository.findAll();
-        System.out.println("== " + rental.getMemberId() + "님의 대여 목록입니다. ==");
+        System.out.println("== " + memberId + "번 회원의 대여 목록입니다. ==");
 
+        boolean hasRentals = false;
         for(Rental r : rentalList) {
-            System.out.println(r);
+            if(r.getMemberId() == memberId) {
+                System.out.println("대여id | 만화id | 회원id | 대여일 | 반납일 ");
+                System.out.println("-------------------------------------");
+                System.out.println(r.getId()+"  | " + r.getComicId() + "  | " + r.getMemberId() + "  | " + r.getRentalDate() + "  | " + r.getReturnDate());
+                hasRentals = true;
+            }
+        }
+
+        if(!hasRentals) {
+            System.out.println("대여 기록이 없습니다");
         }
 
     }
 
 }
+
