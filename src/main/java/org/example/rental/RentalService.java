@@ -1,19 +1,48 @@
 package org.example.rental;
 
+import org.example.comic.Comic;
+import org.example.comic.ComicService;
+import org.example.comic.JdbcComicRepository;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public class RentalService {
     RentalRepository r_Repository = new RentalRepositoryImpl();
+    ComicService comicService = new ComicService(new JdbcComicRepository());
+
+    public long processRent(long memberId, long comicId){
+        if (!validateRent(comicId)){
+            throw new RuntimeException("대여가 불가능한 상태입니다");
+        }
+        Rental rental = new Rental();
+        rental.setMemberId(memberId);
+        rental.setComicId(comicId);
+        rental.setRentalDate(LocalDate.now());
+
+        comicService.updateComicRentedStatus(comicId, true);
+        r_Repository.save(rental);
+
+        return rental.getId();
+
+    }
+    public void processReturn(long rentalId){
+        if(!validateReturn(rentalId)){
+            throw new RuntimeException("반납이 불가능한 상태입니다.");
+        }
+        Rental rental = r_Repository.findByRentalId(rentalId);
+        rental.setReturnDate(LocalDate.now());
+
+        comicService.updateComicRentedStatus(rental.getComicId(), false);
+        r_Repository.update(rental);
+    }
 
     public boolean validateRent(long comicId){
-        List<Rental> allRentals = r_Repository.findAll();
+        Comic comic = comicService.findById(comicId);
 
-        for(Rental r : allRentals) {
-            // ReturnDate가 null인지 확인함
-            if(r.getComicId() == comicId && r.getReturnDate() == null) {
-                System.out.println("해당 도서는 " + r.getMemberId() + "번 회원이 대여한 상태입니다.");
-                return false;
-            }
+        // comic의 isRented가 True : 이미 만화를 누군가 빌려갔다면?
+        if(comic.isRented()) {
+            return false;
         }
         return true;
     }
@@ -26,27 +55,22 @@ public class RentalService {
 
             return false;
         }
+        if (rental.getReturnDate() != null){
+            System.out.println("이미 반납이 완료된 도서입니다");
+
+            return false;
+        }
 
         return true;
     }
 
-    public void showRentalList(long memberId){
+    public List showAllRentalList(){
         List<Rental> rentalList = r_Repository.findAll();
-
-        // JdbcComicRepository.isRented = false;
-        boolean isRented = false;
-        for(Rental r : rentalList) {
-            if(r.getMemberId() == memberId) {
-                System.out.println("대여id | 만화id | 회원id | 대여일 | 반납일 ");
-                System.out.println("-------------------------------------");
-                System.out.println(r.getId()+"  | " + r.getComicId() + "  | " + r.getMemberId() + "  | " + r.getRentalDate() + "  | " + r.getReturnDate());
-                isRented = true;
-            }
+        if (rentalList.isEmpty()){
+            System.out.println("대여 기록이 없습니다.");
         }
 
-        if(!isRented) {
-            System.out.println("대여 기록이 없습니다");
-        }
+        return rentalList;
     }
 
 }
