@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RentalRepositoryImpl implements RentalRepository {
     @Override
-    public int save(Rental rental) {
+    public long save(Rental rental) {
         String sql = "INSERT INTO rental (comicId, memberId, rentalDate) VALUES (?, ?, ?)";
 
         try (Connection conn = DBUtil.getConnection();
@@ -86,11 +86,7 @@ public class RentalRepositoryImpl implements RentalRepository {
             pstmt.setObject(1, rental.getReturnDate());
             pstmt.setLong(2, rental.getId());
 
-            int result = pstmt.executeUpdate();
-
-            if(result > 0){
-                System.out.println(rental.getId() + " 번 대여 기록이 수정되었습니다.");
-            }
+            pstmt.executeUpdate();
 
         } catch (Exception e){
             e.printStackTrace();

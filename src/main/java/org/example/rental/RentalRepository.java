@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface RentalRepository {
     // 대여 정보 저장
-    int save(Rental rental);
+    long save(Rental rental);
 
     // 멤버가 대여한 기록 찾기
     Rental findByRentalId(long id);

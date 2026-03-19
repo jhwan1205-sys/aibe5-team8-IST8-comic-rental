@@ -5,34 +5,35 @@ import java.util.List;
 public class RentalService {
     RentalRepository r_Repository = new RentalRepositoryImpl();
 
-    public void canRent(long comicId){
+    public boolean validateRent(long comicId){
         List<Rental> allRentals = r_Repository.findAll();
 
         for(Rental r : allRentals) {
+            // ReturnDate가 null인지 확인함
             if(r.getComicId() == comicId && r.getReturnDate() == null) {
-                System.out.println("이미 누군가 대여를 하였습니다.");
-                return;
+                System.out.println("해당 도서는 " + r.getMemberId() + "번 회원이 대여한 상태입니다.");
+                return false;
             }
         }
+        return true;
     }
 
-    public void canReturn(long rentalId){
-        List<Rental> allRentals = r_Repository.findAll();
+    public boolean validateReturn(long rentalId){
         Rental rental = r_Repository.findByRentalId(rentalId);
-
-        // 고려사항
-        // 대여기록의 MemberId와 현재 로그인한 멤버의 ID와 같은가?
 
         if (rental == null){
             System.out.println("해당 대여 번호를 찾을 수 없습니다.");
+
+            return false;
         }
-        return;
+
+        return true;
     }
 
     public void showRentalList(long memberId){
         List<Rental> rentalList = r_Repository.findAll();
 
-        // comic.isRented
+        // JdbcComicRepository.isRented = false;
         boolean isRented = false;
         for(Rental r : rentalList) {
             if(r.getMemberId() == memberId) {
