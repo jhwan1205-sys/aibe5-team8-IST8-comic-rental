@@ -55,7 +55,7 @@ public class MemberRepository {
                 members.add(member);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DB 조회 중 오류 발생", e);
         }
         return members;
     }
