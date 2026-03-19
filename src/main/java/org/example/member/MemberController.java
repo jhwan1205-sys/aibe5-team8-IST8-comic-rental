@@ -6,25 +6,13 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MemberController {
-    private MemberService memberService = new MemberService();
-    private Scanner scanner;
+    private final MemberService memberService;
+    private final Scanner scanner;
 
-    public MemberController(Scanner scanner) {
+    public MemberController(Scanner scanner, MemberService memberService) {
         this.scanner = scanner;
+        this.memberService = memberService;
     }
-    /* app.java 라우팅에 따라 활용 예정
-    public void handle(Rq rq) {
-        switch (rq.getAction()) {
-            case "add":
-                addMember();
-                break;
-            case "list":
-                listMembers();
-                break;
-            default:
-                System.out.println("=> 존재하지 않는 멤버 명령어입니다.");
-        }
-    } */
 
     public void addMember() {
         System.out.print("이름: ");
@@ -33,7 +21,7 @@ public class MemberController {
         System.out.print("전화번호: ");
         String phone = scanner.nextLine().trim();
 
-        int id = memberService.addMember(name, phone);
+        Long id = memberService.addMember(name, phone);
 
         System.out.println("=> 회원이 등록되었습니다. (id=" + id + ")");
     }
