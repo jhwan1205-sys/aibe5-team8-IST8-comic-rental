@@ -69,7 +69,7 @@ public class JdbcComicRepository implements ComicRepository {
     }
 
     @Override
-    public Optional<Comic> findById(long id) {
+    public Comic findById(long id) {
         final String sql = """
                 SELECT id, title, volume, author, isRented, regdate
                 FROM comic
@@ -84,14 +84,14 @@ public class JdbcComicRepository implements ComicRepository {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (!rs.next()) {
-                    return Optional.empty();
+                    return null;
                 }
-                return Optional.of(mapRow(rs));
+                return mapRow(rs);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override

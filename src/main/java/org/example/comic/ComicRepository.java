@@ -9,7 +9,7 @@ public interface ComicRepository  {
 
     List<Comic> getComics();
 
-    Optional<Comic> findById(long id);
+    Comic findById(long id);
 
     boolean updateComic(long id, String title, int volume, String author);
 

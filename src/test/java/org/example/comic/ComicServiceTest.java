@@ -12,18 +12,21 @@ class ComicServiceTest {
     void addComic_잘못된_입력이_주어지면_예외가_발생한다() {
         ComicService service = new ComicService(new InMemoryComicRepository());
 
-        assertThrows(IllegalArgumentException.class, () -> service.addComic(" ", 1, "a"));
-        assertThrows(IllegalArgumentException.class, () -> service.addComic("t", 0, "a"));
-        assertThrows(IllegalArgumentException.class, () -> service.addComic("t", 1, " "));
+        assertThrows(IllegalArgumentException.class, () -> service.addComic(" ", "1", "a"));
+        assertThrows(IllegalArgumentException.class, () -> service.addComic("t", "0", "a"));
+        assertThrows(IllegalArgumentException.class, () -> service.addComic("t", "1", " "));
+        assertThrows(IllegalArgumentException.class, () -> service.addComic("", "1", "a"));
+        assertThrows(IllegalArgumentException.class, () -> service.addComic("t", "abc", "a"));
+        assertThrows(IllegalArgumentException.class, () -> service.addComic("t", "1", ""));
     }
 
     @Test
     void addComic_정상적인_입력이_주어지면_만화가_저장된다()  {
         ComicService service = new ComicService(new InMemoryComicRepository());
 
-        long id = service.addComic("One Piece", 1, "Oda");
+        long id = service.addComic("One Piece", "1", "Oda");
 
-        Comic comic = service.findById(id).orElseThrow();
+        Comic comic = service.findById(id);
         assertEquals("One Piece", comic.getTitle());
         assertEquals(1, comic.getVolume());
         assertEquals("Oda", comic.getAuthor());
@@ -34,8 +37,8 @@ class ComicServiceTest {
         InMemoryComicRepository repo = new InMemoryComicRepository();
         ComicService service = new ComicService(repo);
 
-        service.addComic("One Piece", 1, "Oda");
-        service.addComic("Naruto", 1, "Kishimoto");
+        service.addComic("One Piece", "1", "Oda");
+        service.addComic("Naruto", "1", "Kishimoto");
 
         List<Comic> comics = service.getComics();
 
@@ -47,8 +50,8 @@ class ComicServiceTest {
         InMemoryComicRepository repo = new InMemoryComicRepository();
         ComicService service = new ComicService(repo);
 
-        service.addComic("One Piece", 1, "Oda");
-        service.addComic("Naruto", 2, "Kishimoto");
+        service.addComic("One Piece", "1", "Oda");
+        service.addComic("Naruto", "2", "Kishimoto");
 
         List<Comic> comics = service.getComics();
 
@@ -78,11 +81,11 @@ class ComicServiceTest {
         InMemoryComicRepository repo = new InMemoryComicRepository();
         ComicService service = new ComicService(repo);
 
-        long id = service.addComic("One Piece", 1, "Oda");
+        long id = service.addComic("One Piece", "1", "Oda");
 
-        assertTrue(service.updateComic(id, "One Piece", null, null));
+        assertTrue(service.updateComic(id, "One Piece", "", ""));
 
-        Comic after = service.findById(id).orElseThrow();
+        Comic after = service.findById(id);
         assertEquals("One Piece", after.getTitle());
         assertEquals(1, after.getVolume());
         assertEquals("Oda", after.getAuthor());
@@ -91,7 +94,7 @@ class ComicServiceTest {
     @Test
     void updateComic_존재하지_않는_ID가_주어지면_false를_반환한다() {
         ComicService service = new ComicService(new InMemoryComicRepository());
-        assertFalse(service.updateComic(999, "t", 1, "a"));
+        assertFalse(service.updateComic(999, "t", "1", "a"));
     }
 
     @Test
@@ -99,13 +102,13 @@ class ComicServiceTest {
         InMemoryComicRepository repo = new InMemoryComicRepository();
         ComicService service = new ComicService(repo);
 
-        long id = service.addComic("One Piece", 1, "Oda");
+        long id = service.addComic("One Piece", "1", "Oda");
 
-        boolean result = service.updateComic(id, "Naruto", 2, "Kishimoto");
+        boolean result = service.updateComic(id, "Naruto", "2", "Kishimoto");
 
         assertTrue(result);
 
-        Comic after = service.findById(id).orElseThrow();
+        Comic after = service.findById(id);
         assertEquals("Naruto", after.getTitle());
         assertEquals(2, after.getVolume());
         assertEquals("Kishimoto", after.getAuthor());
@@ -116,11 +119,11 @@ class ComicServiceTest {
         InMemoryComicRepository repo = new InMemoryComicRepository();
         ComicService service = new ComicService(repo);
 
-        long id = service.addComic("One Piece", 1, "Oda");
+        long id = service.addComic("One Piece", "1", "Oda");
 
-        service.updateComic(id, null, 10, null);
+        service.updateComic(id, "", "10", "");
 
-        Comic after = service.findById(id).orElseThrow();
+        Comic after = service.findById(id);
         assertEquals("One Piece", after.getTitle()); // 유지
         assertEquals(10, after.getVolume());         // 변경
         assertEquals("Oda", after.getAuthor());      // 유지
@@ -131,12 +134,12 @@ class ComicServiceTest {
         InMemoryComicRepository repo = new InMemoryComicRepository();
         ComicService service = new ComicService(repo);
 
-        long id = service.addComic("One Piece", 1, "Oda");
+        long id = service.addComic("One Piece", "1", "Oda");
 
         boolean result = service.deleteComic(id);
 
         assertTrue(result);
-        assertTrue(service.findById(id).isEmpty());
+        assertThrows(NoSuchElementException.class, () -> service.findById(id));
     }
 
     @Test
@@ -164,8 +167,8 @@ class ComicServiceTest {
         }
 
         @Override
-        public Optional<Comic> findById(long id) {
-            return Optional.ofNullable(store.get(id));
+        public Comic findById(long id) {
+            return store.get(id);
         }
 
         @Override
