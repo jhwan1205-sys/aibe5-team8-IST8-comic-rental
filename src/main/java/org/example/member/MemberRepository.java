@@ -59,4 +59,36 @@ public class MemberRepository {
         }
         return members;
     }
+
+
+    public Member findById(long id) {
+        String sql = "SELECT * FROM member WHERE id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    long memberId = rs.getLong("id");
+                    String name = rs.getString("name");
+                    String phone = rs.getString("phone");
+
+                    java.sql.Date sqlDate = rs.getDate("regDate");
+                    LocalDate regDate = (sqlDate != null) ? sqlDate.toLocalDate() : null;
+
+                    return new Member(memberId, name, phone, regDate);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("회원 조회 중 DB 오류가 발생했습니다.", e);
+        }
+
+        // ResultSet에 데이터가 없으면 null을 반환
+        return null;
+    }
+
+
+
 }

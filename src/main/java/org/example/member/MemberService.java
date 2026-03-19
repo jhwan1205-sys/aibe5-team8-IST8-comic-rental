@@ -21,6 +21,17 @@ public class MemberService {
         return memberRepository.getMembers();
     }
 
+    public Member findById(long id) {
+        Member member = memberRepository.findById(id);
+
+        // Repository가 null을 반환했다면, 예외를 던져 NullPointerException 차단
+        if (member == null) {
+            throw new IllegalArgumentException("존재하지 않는 회원입니다. (id=" + id + ")");
+        }
+
+        return member;
+    }
+
     private void validateName(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("이름은 필수 입력값입니다.");
