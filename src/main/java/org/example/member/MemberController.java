@@ -1,7 +1,5 @@
 package org.example.member;
 
-import org.example.Rq;
-
 import java.util.List;
 import java.util.Scanner;
 
@@ -29,11 +27,11 @@ public class MemberController {
     public void listMembers() {
         List<Member> members = memberService.listMembers();
 
-        System.out.println("id | 이름       | 전화번호         | 등록일");
+        System.out.println("id    | 이름       | 전화번호         | 등록일");
         System.out.println("-------------------------------------------------------------");
 
         for (Member m : members) {
-            System.out.printf("%d | %s | %s | %s%n",
+            System.out.printf("%-5d | %-10s | %-15s | %s%n",
                     m.getId(), m.getName(), m.getPhone(), m.getRegDate());
         }
     }
