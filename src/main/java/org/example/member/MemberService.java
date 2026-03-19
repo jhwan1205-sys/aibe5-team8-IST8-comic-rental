@@ -3,20 +3,18 @@ package org.example.member;
 import java.util.List;
 
 public class MemberService {
-    private MemberRepository memberRepository = new MemberRepository();
+    private final MemberRepository memberRepository;
 
-    public int addMember(String name, String phone) {
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    public Long addMember(String name, String phone) {
 
         validateName(name);
         validatePhone(phone);
 
-        int id = memberRepository.addMember(name, phone);
-
-        if (id == -1) {
-            throw new RuntimeException("DB 오류로 회원 등록 실패");
-        }
-
-        return id;
+        return memberRepository.addMember(name, phone);
     }
 
     public List<Member> listMembers() {
@@ -34,7 +32,6 @@ public class MemberService {
             throw new IllegalArgumentException("전화번호는 필수 입력값입니다.");
         }
 
-        int hyphenCount = phone.length() - phone.replace("-", "").length();
         if (!phone.matches("^01[0-9]-\\d{3,4}-\\d{4}$")) {
             throw new IllegalArgumentException("전화번호 형식이 올바르지 않습니다.");
         }
