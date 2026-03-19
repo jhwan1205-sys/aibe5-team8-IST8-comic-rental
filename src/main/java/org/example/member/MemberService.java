@@ -31,8 +31,9 @@ public class MemberService {
         if (phone == null || phone.isEmpty()) {
             throw new IllegalArgumentException("전화번호는 필수 입력값입니다.");
         }
+        String phoneRegex = "^(02|0[3-9]{1}[0-9]{1}|01[0-9])-\\d{3,4}-\\d{4}$";
 
-        if (!phone.matches("^01[0-9]-\\d{3,4}-\\d{4}$")) {
+        if (!phone.matches(phoneRegex)) {
             throw new IllegalArgumentException("전화번호 형식이 올바르지 않습니다.");
         }
     }

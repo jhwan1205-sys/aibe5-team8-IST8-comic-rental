@@ -22,11 +22,7 @@ public class ComicService {
 
     // 전체 만화 목록 조회
     public List<Comic> getComics() {
-        List<Comic>  comics = comicRepository.getComics();
-        if (comics.isEmpty()) {
-            throw new NoSuchElementException("등록된 만화책이 없습니다.");
-        }
-        return comics;
+        return comicRepository.getComics();
     }
 
     // id로 만화 조회: 존재하면 반환, 없으면 예외 발생
