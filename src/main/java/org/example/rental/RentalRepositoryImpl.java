@@ -5,6 +5,7 @@ import org.example.db.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +15,30 @@ public class RentalRepositoryImpl implements RentalRepository {
     public long save(Rental rental) {
         String sql = "INSERT INTO rental (comicId, memberId, rentalDate) VALUES (?, ?, ?)";
 
+        // 세번째 인자로 RETURN_GENERATED_KEYS 추가
         try (Connection conn = DBUtil.getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+            PreparedStatement pstmt = conn.prepareStatement(sql,  Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setLong(1, rental.getComicId());
             pstmt.setLong(2, rental.getMemberId());
             pstmt.setObject(3, rental.getRentalDate());
 
-            return pstmt.executeUpdate();
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows == 0) {
+                return 0; // 저장 실패
+            }
+
+            // 생성된 키(ID) 꺼내기
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    long id = rs.getLong(1);
+                    // 자바 객체에 ID 세팅 (동기화)
+                    rental.setId(id);
+                    return id; // 실제 DB ID 반환
+                } else {
+                    return 0;
+                }
+            }
         } catch (Exception e){
             e.printStackTrace();
             return 0;

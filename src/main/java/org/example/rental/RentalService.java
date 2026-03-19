@@ -8,8 +8,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class RentalService {
-    RentalRepository r_Repository = new RentalRepositoryImpl();
-    ComicService comicService = new ComicService(new JdbcComicRepository());
+    private final RentalRepository r_Repository;
+    private final ComicService comicService;
+
+    public RentalService(RentalRepository r_Repository, ComicService comicService){
+        this.r_Repository = r_Repository;
+        this.comicService = comicService;
+    }
 
     public long processRent(long memberId, long comicId){
         if (!validateRent(comicId)){
