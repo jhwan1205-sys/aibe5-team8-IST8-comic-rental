@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberRepository {
-    public int addMember(String name, String phone) {
+    public Long addMember(String name, String phone) {
         String sql = """
-                INSERT INTO member(name, phone)
-                VALUES (?, ?)
-                """;
+            INSERT INTO member(name, phone)
+            VALUES (?, ?)
+            """;
+
         try (
                 Connection conn = DBUtil.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); //AUTO_INCREMENT id 가져오기
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ) {
 
             pstmt.setString(1, name);
@@ -25,14 +26,14 @@ public class MemberRepository {
 
             ResultSet rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
-                int id = rs.getInt(1);
-                return id;
+                return rs.getLong(1);
             }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("DB 오류 발생", e);
         }
-        catch(SQLException e){
-            e.printStackTrace();
-        }
-        return -1;
+
+        throw new RuntimeException("ID 생성 실패");
     }
 
     public List<Member> getMembers() {
