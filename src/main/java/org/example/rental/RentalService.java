@@ -1,14 +1,12 @@
 package org.example.rental;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public class RentalService {
-    RentalRepository repository = new RentalRepositoryImpl();
+    RentalRepository r_Repository = new RentalRepositoryImpl();
 
-    public void rentComic(long comicId, long memberId) {
-        System.out.println("== 대여 서비스입니다. ==");
-        List<Rental> allRentals = repository.findAll();
+    public void canRent(long comicId){
+        List<Rental> allRentals = r_Repository.findAll();
 
         for(Rental r : allRentals) {
             if(r.getComicId() == comicId && r.getReturnDate() == null) {
@@ -16,52 +14,38 @@ public class RentalService {
                 return;
             }
         }
-
-        Rental rental = new Rental();
-        rental.setMemberId(memberId);
-        rental.setComicId(comicId);
-        rental.setRentalDate(LocalDate.now());
-
-        int result = repository.save(rental);
-        if(result > 0) {
-            System.out.println("대여가 완료되었습니다.");
-        }
     }
 
-    public void returnComic(long rentalId) {
-        System.out.println("== 반납 서비스입니다. ==");
-        Rental rental = repository.findByRentalId(rentalId);
+    public void canReturn(long rentalId){
+        List<Rental> allRentals = r_Repository.findAll();
+        Rental rental = r_Repository.findByRentalId(rentalId);
+
+        // 고려사항
+        // 대여기록의 MemberId와 현재 로그인한 멤버의 ID와 같은가?
 
         if (rental == null){
             System.out.println("해당 대여 번호를 찾을 수 없습니다.");
-            return;
         }
-
-        // volume++;
-        rental.setReturnDate(LocalDate.now());
-        repository.update(rental);
-        System.out.println("반납이 완료되었습니다.");
-
+        return;
     }
 
-    public void listRentals(long memberId){
-        List<Rental> rentalList = repository.findAll();
-        System.out.println("== " + memberId + "번 회원의 대여 목록입니다. ==");
+    public void showRentalList(long memberId){
+        List<Rental> rentalList = r_Repository.findAll();
 
-        boolean hasRentals = false;
+        // comic.isRented
+        boolean isRented = false;
         for(Rental r : rentalList) {
             if(r.getMemberId() == memberId) {
                 System.out.println("대여id | 만화id | 회원id | 대여일 | 반납일 ");
                 System.out.println("-------------------------------------");
                 System.out.println(r.getId()+"  | " + r.getComicId() + "  | " + r.getMemberId() + "  | " + r.getRentalDate() + "  | " + r.getReturnDate());
-                hasRentals = true;
+                isRented = true;
             }
         }
 
-        if(!hasRentals) {
+        if(!isRented) {
             System.out.println("대여 기록이 없습니다");
         }
-
     }
 
 }
