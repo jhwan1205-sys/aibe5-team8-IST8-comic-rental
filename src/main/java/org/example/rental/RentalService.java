@@ -2,7 +2,7 @@ package org.example.rental;
 
 import org.example.comic.Comic;
 import org.example.comic.ComicService;
-import org.example.comic.JdbcComicRepository;
+import org.example.member.MemberService;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -11,17 +11,22 @@ import java.util.List;
 public class RentalService {
     private final RentalRepository r_Repository;
     private final ComicService comicService;
+    private final MemberService memberService;
 
-    public RentalService(RentalRepository r_Repository, ComicService comicService){
+    public RentalService(RentalRepository r_Repository, ComicService comicService, MemberService memberService){
         this.r_Repository = r_Repository;
         this.comicService = comicService;
+        this.memberService = memberService;
     }
 
     public long processRent(long memberId, long comicId) throws SQLException {
         Comic comic = comicService.findById(comicId);
+        Member member = memberService.findById(memberId);
 
         if(comic == null){
             throw new IllegalArgumentException("존재하지 않는 만화책입니다.");
+        } else if (member == null){
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
         }
         // comic의 isRented가 True : 이미 만화를 누군가 빌려갔다면?
         if(comic.isRented()) {
