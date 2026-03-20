@@ -2,6 +2,7 @@ package org.example.rental;
 
 import org.example.comic.Comic;
 import org.example.comic.ComicService;
+import org.example.member.Member;
 import org.example.member.MemberService;
 
 import java.sql.SQLException;

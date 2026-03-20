@@ -12,13 +12,13 @@ public class App {
     private final Scanner sc;
     private final MemberController memberController;
     private final ComicController comicController;
-//    private final RentalController rentalController;
+    private final RentalController rentalController;
 
     public App() {
         this.sc = new Scanner(System.in);
         ComicRepository comicRepository = new JdbcComicRepository();
         MemberRepository memberRepository = new MemberRepository();
-        RentalRepository rentalRepository=new RentalRepository();
+        RentalRepository rentalRepository=new RentalRepositoryImpl();
 
         ComicService comicService = new ComicService(comicRepository);
         MemberService memberService = new MemberService(memberRepository);
@@ -26,7 +26,7 @@ public class App {
 
         this.comicController = new ComicController(sc, comicService);
         this.memberController = new MemberController(sc, memberService);
-        this.rentalController = new RentalController(sc, rentalService);
+        this.rentalController = new RentalController(rentalService);
     }
 
     public void run() {
