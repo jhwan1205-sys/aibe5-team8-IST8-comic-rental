@@ -63,6 +63,13 @@ comic-rental/
 └── README.md                   # 📄 프로젝트 설명서
 ```
 
+---
+
+## ERD
+<img width="660" height="489" alt="image" src="https://github.com/user-attachments/assets/184e887f-82d2-4faf-ac65-24ce5c5fd19f" />
+
+---
+
 ## 🤝 팀 협업 컨벤션 (Team Collaboration Convention)
 
 우리 팀의 안전하고 효율적인 프로젝트 진행을 위한 협업 가이드입니다.
