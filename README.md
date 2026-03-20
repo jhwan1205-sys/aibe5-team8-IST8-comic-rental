@@ -5,14 +5,82 @@
 - **VCS**: Git & GitHub
 
 ---
+## 🚀 구현한 기능
 
-## 🗄️ 데이터베이스 세팅 (Getting Started)
-프로젝트를 로컬 환경에서 실행하기 위해 아래의 SQL 스크립트를 MySQL에서 먼저 실행해 주세요.
-```sql
-CREATE DATABASE comic_rental_db;
+### 1. 아키텍처 및 시스템 설계
+* **MVC 패턴 적용:** `Controller`(입출력), `Service`(비즈니스 로직), `Repository`(DB 통신)로 계층을 완벽히 분리하였습니다.
+* **의존성 주입 (DI):** `App.java`에서 각 계층의 구현체를 생성하여 주입함으로써 객체 간의 결합도를 낮췄습니다.
+* **글로벌 예외 처리:** 하위 계층에서 발생한 예외(DB 오류, 검증 실패 등)를 최상단 로직으로 던져(Throw) 프로그램의 강제 종료를 막고 일관된 에러 메시지를 출력합니다.
+
+### 2. 도메인별 핵심 기능
+* **👤 회원 관리 (Member)**
+  * 회원 등록 (이름, 전화번호) 및 전체 목록 조회
+  * **데이터 검증:** 전화번호 형식(정규식) 예외 처리 완벽 적용 (`010-XXXX-XXXX` 또는 `02-XXX-XXXX` 등)
+* **📖 만화책 관리 (Comic)**
+  * 만화책 등록, 전체 조회, 상세 조회, 수정, 삭제 기능 구현
+* **🤝 대여 및 반납 (Rental)**
+  * 특정 회원에게 만화책 대여 및 반납 처리 로직 구현
+  * **상태 동기화 로직:** 대여/반납 발생 시 `Comic` 테이블의 `isRented` 상태값을 DB에서 실시간으로 변경하고 검증합니다.
+  * 이미 대여 중인 도서, 존재하지 않는 회원/도서, 이미 반납된 내역에 대한 방어 로직이 적용되어 있습니다.
+
+---
+
+## ⌨️ 사용 가능한 명령어
+
+| 카테고리 | 명령어 | 설명 | 사용 예시 |
+|---|---|---|---|
+| **만화책** | `comic-add` | 신규 만화책 등록 | `comic-add` |
+| | `comic-list` | 전체 만화책 목록 조회 | `comic-list` |
+| | `comic-detail [번호]` | 특정 만화책 상세 조회 | `comic-detail 1` |
+| | `comic-update [번호]` | 특정 만화책 정보 수정 | `comic-update 1` |
+| | `comic-delete [번호]` | 특정 만화책 삭제 | `comic-delete 1` |
+| **회원** | `member-add` | 신규 회원 등록 | `member-add` |
+| | `member-list` | 전체 회원 목록 조회 | `member-list` |
+| **대여/반납** | `rent [회원번호] [만화번호]`| 특정 회원에게 만화책 대여 | `rent 1 2` |
+| | `return [대여번호]` | 만화책 반납 처리 | `return 1` |
+| | `rental-list` | 전체 대여 및 반납 내역 조회 | `rental-list` |
+| **시스템** | `exit` | 프로그램 종료 | `exit` |
+
+---
+
+## 💻 실행 예시
+
+```text
+===만화 대여 프로그램 시작===
+명령어 : member-add
+이름: 에밀리
+전화번호: 010-1111-2222
+=> 회원이 등록되었습니다. (id=1)
+
+명령어 : comic-add
+제목: 슬램덩크
+권수: 1
+작가: 이노우에 다케히코
+=> 만화책이 등록되었습니다. (id=1)
+
+명령어 : comic-list
+번호 | 제목       | 권수 | 작가               | 상태 | 등록일
+-------------------------------------------------------------
+1    | 슬램덩크   | 1    | 이노우에 다케히코   | 대여가능 | 2026-03-03
+
+명령어 : rent 1 1
+=> 대여 완료: [대여id=1] 만화(1) → 회원(1)
+
+명령어 : rental-list
+대여id | 만화id | 회원id | 대여일     | 반납일
+-----------------------------------------------
+1     | 1      | 1      | 2026-03-03 | -
+
+명령어 : return 1
+=> 반납 완료: 대여id=1
+
+명령어 : exit
+프로그램을 종료합니다.
 ```
 
-###  DB 접속 정보 설정
+## 🗄️ 데이터베이스 세팅 (Getting Started)
+
+### 1. DB 접속 정보 설정
 `db.properties` 파일은 `.gitignore`에 등록되어 있어 GitHub에 올라가지 않으므로 각자 로컬에서 만들어야 합니다.
 
 1. `src/main/resources/` 경로에 있는 `db.properties.sample` 파일의 이름을 `db.properties`로 변경합니다.
@@ -23,7 +91,49 @@ db.url=jdbc:mysql://localhost:3306/comic_rental_db
 db.user=root
 db.password=본인의_MySQL_비밀번호_입력
 ```
+
+### 2. DB 및 테이블 생성 (DDL)
+MySQL 클라이언트(Workbench, 터미널 등)에서 아래의 SQL 스크립트를 실행하여 스키마를 구성합니다.
+
+```sql
+-- 데이터베이스 생성 및 사용
+CREATE DATABASE comic_rental_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE comic_rental_db;
+
+-- 만화책(Comic) 테이블
+CREATE TABLE comic(
+	id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	title VARCHAR(200) NOT NULL,
+	volume INT NOT NULL,
+	author VARCHAR(100),
+	isrented BOOLEAN DEFAULT FALSE,
+	regdate DATE DEFAULT NOW()
+);
+
+-- 회원(Member) 테이블
+CREATE TABLE member(
+	id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	name VARCHAR(50) NOT NULL,
+	phone VARCHAR(20),
+	regdate DATE DEFAULT NOW()
+);
+
+-- 대여(Rental) 테이블
+CREATE TABLE rental(
+	id BIGINT PRIMARY KEY AUTO_INCREMENT,
+	comicId BIGINT NOT NULL,
+	memberId BIGINT NOT NULL,
+	rentalDate DATE DEFAULT NOW(),
+	returnDate DATE NULL,
+	FOREIGN KEY (comicId) REFERENCES comic (id),
+	FOREIGN KEY (memberId) REFERENCES member (id)
+);
+```
 ---
+
+
+
+
 ## 📂 프로젝트 파일 구조 (Directory Structure)
 
 본 프로젝트는 객체지향의 역할 분담과 향후 프레임워크 도입을 고려하여 도메인 및 MVC(Controller-Service-Repository) 패턴 기반으로 디렉토리를 분리하여 작업합니다.
