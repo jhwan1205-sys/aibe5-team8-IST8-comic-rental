@@ -17,8 +17,12 @@ public class RentalController {
         try {
             long rentalId = r_Service.processRent(memberId, comicId);
             System.out.printf("=> 대여 완료: [대여id=%d] 만화(%d) → 회원(%d)%n", rentalId, comicId, memberId);
-        } catch (Exception e) {
-            System.out.println("❌ 만화 대여에 실패하였습니다: "  + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("❌ 대여 실패: "  + e.getMessage());
+        } catch (Exception e){
+            System.out.println("❌ 시스템 오류가 발생하였습니다 로그를 확인해주세요");
+            // 로그 남기기
+            e.printStackTrace();
         }
     }
 
@@ -26,8 +30,12 @@ public class RentalController {
        try {
            r_Service.processReturn(rentalId);
            System.out.println("=> 반납 완료: 대여id=" + rentalId);
-        } catch (Exception e) {
-            System.out.println("❌ 만화 반납에 실패하였습니다: "   + e.getMessage());
+       } catch (IllegalArgumentException e) {
+           System.out.println("❌ 올바른 대여 번호를 확인해주세요:" + e.getMessage());
+
+       } catch (Exception e) {
+            System.out.println("❌ 시스템 오류가 발생하였습니다 로그를 확인해주세요");
+            e.printStackTrace();
         }
 
     }
