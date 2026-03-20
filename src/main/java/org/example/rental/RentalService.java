@@ -49,7 +49,7 @@ public class RentalService {
         return resultId;
 
     }
-    public void processReturn(long rentalId){
+    public void processReturn(long rentalId) throws SQLException {
         Rental rental = r_Repository.findByRentalId(rentalId);
 
         if (rental == null){
@@ -65,7 +65,7 @@ public class RentalService {
         r_Repository.update(rental);
     }
 
-    public List showAllRentalList(){
+    public List showAllRentalList() throws SQLException {
         List<Rental> rentalList = r_Repository.findAll();
         return rentalList;
     }

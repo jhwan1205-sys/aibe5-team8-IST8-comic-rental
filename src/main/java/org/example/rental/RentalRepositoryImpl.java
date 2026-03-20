@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RentalRepositoryImpl implements RentalRepository {
+public class RentalRepositoryImpl implements RentalRepository  {
     @Override
-    public long save(Rental rental) {
+    public long save(Rental rental) throws SQLException {
         String sql = "INSERT INTO rental (comicId, memberId, rentalDate) VALUES (?, ?, ?)";
 
         // 세번째 인자로 RETURN_GENERATED_KEYS 추가
@@ -36,14 +36,11 @@ public class RentalRepositoryImpl implements RentalRepository {
                     return 0;
                 }
             }
-        } catch (SQLException e){
-            e.printStackTrace();
-            return 0;
         }
     }
 
     @Override
-    public Rental findByRentalId(long rentalid) {
+    public Rental findByRentalId(long rentalid) throws SQLException {
         String sql = "SELECT * FROM rental WHERE id = ?";
 
         try (Connection conn = DBUtil.getConnection();
@@ -62,14 +59,13 @@ public class RentalRepositoryImpl implements RentalRepository {
                     return rental;
                 }
             }
-        } catch (Exception e){
-            e.printStackTrace();
         }
+
         return null;
     }
 
     @Override
-    public List<Rental> findAll() {
+    public List<Rental> findAll() throws SQLException {
         List<Rental> rentalList = new ArrayList<>();
         String sql = "SELECT * FROM rental";
 
@@ -85,14 +81,12 @@ public class RentalRepositoryImpl implements RentalRepository {
                 rental.setReturnDate(rs.getObject("returnDate", LocalDate.class));
                 rentalList.add(rental);
             }
-        } catch (Exception e){
-            e.printStackTrace();
         }
         return rentalList;
     }
 
     @Override
-    public void update(Rental rental) {
+    public void update(Rental rental) throws SQLException {
         String sql = "UPDATE rental SET returnDate = ? WHERE id = ?";
 
         try (Connection conn = DBUtil.getConnection();
@@ -102,8 +96,6 @@ public class RentalRepositoryImpl implements RentalRepository {
 
             pstmt.executeUpdate();
 
-        } catch (Exception e){
-            e.printStackTrace();
         }
     }
 }
