@@ -142,4 +142,25 @@ public class JdbcComicRepository implements ComicRepository {
         LocalDate regDate = (sqlRegDate == null) ? null : sqlRegDate.toLocalDate();
         return new Comic(id, title, volume, author, isRented, regDate);
     }
+    @Override
+    public void updateRentedStatus(Long comicId, boolean isRented) {
+        String sql = "UPDATE comic SET isRented = ? WHERE id = ?";
+
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+
+            pstmt.setBoolean(1, isRented);
+            pstmt.setLong(2, comicId);
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new RuntimeException("상태 업데이트 실패: 해당 만화책을 찾을 수 없습니다. (id=" + comicId + ")");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("만화책 대여 상태 업데이트 중 DB 오류가 발생했습니다.", e);
+        }
+    }
 }

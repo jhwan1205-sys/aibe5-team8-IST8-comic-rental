@@ -14,4 +14,6 @@ public interface ComicRepository  {
     boolean updateComic(long id, String title, int volume, String author);
 
     boolean deleteById(long id);
+
+    void updateRentedStatus(Long comicId, boolean isRented);
 }

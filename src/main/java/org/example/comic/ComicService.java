@@ -50,7 +50,7 @@ public class ComicService {
         if (volumeInput.isEmpty()) {
             volume = Objects.requireNonNull(before).getVolume();
         } else {
-                volume = vaildateVolume(volumeInput);
+            volume = vaildateVolume(volumeInput);
         }
 
         // 입력된 값이 없으면 이전 값으로 설정
@@ -92,5 +92,8 @@ public class ComicService {
         if (author.isBlank()) {
             throw new IllegalArgumentException("작가는 필수 입력값입니다.");
         }
+    }
+    public void updateComicRentedStatus(Long comicId, boolean isRented) {
+        comicRepository.updateRentedStatus(comicId, isRented);
     }
 }
