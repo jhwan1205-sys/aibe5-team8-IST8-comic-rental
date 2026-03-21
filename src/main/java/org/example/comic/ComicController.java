@@ -48,7 +48,10 @@ public final class ComicController {
                     c.getRegDate()
             );
         }
+
     }
+
+
 
     // 만화책 상세 정보 조회
     public void showComicDetail(long id) {
