@@ -5,7 +5,6 @@ import org.example.comic.*;
 import org.example.member.*;
 import org.example.rental.*;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class App {
