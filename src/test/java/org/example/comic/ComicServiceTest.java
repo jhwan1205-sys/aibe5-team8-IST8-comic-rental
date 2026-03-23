@@ -148,6 +148,16 @@ class ComicServiceTest {
         assertFalse(service.deleteComic(999));
     }
 
+    @Test
+    void updateRentedStatus_대여상태를_바꾸면_대여상태가_변경된다() {
+        InMemoryComicRepository repo = new InMemoryComicRepository();
+        ComicService service = new ComicService(repo);
+
+        long id = service.addComic("One Piece", "1", "Oda");
+        service.updateComicRentedStatus(id, true);
+        assertTrue(service.findById(id).isRented());
+    }
+
 
     // 테스트 전용 인메모리 구현체 (DB 없이 ComicRepository 동작을 검증하기 위해 사용)
     private static final class InMemoryComicRepository implements ComicRepository {
@@ -184,6 +194,11 @@ class ComicServiceTest {
         @Override
         public boolean deleteById(long id) {
             return store.remove(id) != null;
+        }
+
+        @Override
+        public void updateRentedStatus(Long comicId, boolean isRented) {
+            store.computeIfPresent(comicId, (k, before) -> new Comic(comicId, before.getTitle(), before.getVolume(), before.getAuthor(), isRented, before.getRegDate()));
         }
     }
 }
